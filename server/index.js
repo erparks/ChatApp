@@ -32,6 +32,8 @@ function htmlEntities(str) {
 }
 
 function handleMessage(data) {
+  console.log("Received messsage from room: " + data.room);
+
   let reconstructedMessage = {
     type: "message",
     username: data.username,
@@ -55,7 +57,7 @@ function handleSubscribe(data, connection) {
   rooms[data.room].clientCount++;
   rooms[data.room].clients.push(connection);
 
-  console.log("New subscription: " + rooms);
+  console.log("New subscription: " + Object.keys(rooms));
 }
 
 wsServer.on("request", function(request) {
@@ -63,7 +65,7 @@ wsServer.on("request", function(request) {
 
   var connection = request.accept(null, request.origin);
 
-  rooms.default.push(connection);
+  //rooms.default.push(connection);
 
   connection.on("message", function(message) {
     if (message.type === "utf8") {

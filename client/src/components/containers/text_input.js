@@ -42,15 +42,16 @@ export default class TextInput extends Component {
   };
 
   send = (connection, username, room) => {
-    this.state.text &&
-      connection.send(
-        JSON.stringify({
-          type: "message",
-          username: username,
-          room: room,
-          text: this.state.text
-        })
-      );
+    let json = JSON.stringify({
+      type: "message",
+      username: username,
+      room: room,
+      text: this.state.text
+    });
+
+    console.log("sending message: " + json);
+
+    this.state.text && connection.send(json);
 
     this.setText("");
     document.getElementById("clear").click();
@@ -145,7 +146,11 @@ export default class TextInput extends Component {
           <button
             style={styles.sendButton}
             onClick={() =>
-              this.send(this.props.connection, this.props.username)
+              this.send(
+                this.props.connection,
+                this.props.username,
+                this.props.currentRoom
+              )
             }
           >
             Send

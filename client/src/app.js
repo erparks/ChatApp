@@ -55,12 +55,14 @@ class App extends Component {
       connection.send(
         JSON.stringify({
           type: "subscribe",
+          username: this.state.username,
           room: name
         })
       );
 
     this.setState(prevState => ({
-      rooms: [...prevState.rooms, name]
+      rooms: [...prevState.rooms, name],
+      currentRoom: name
     }));
   };
 
@@ -96,7 +98,7 @@ class App extends Component {
                     username={this.state.username}
                     usernameSubmit={name => this.setState({ username: name })}
                     connection={this.state.connection}
-                    currentRoom={this.currentRoom}
+                    currentRoom={this.state.currentRoom}
                   />
                 )}
               />

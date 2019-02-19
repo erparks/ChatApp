@@ -34,16 +34,16 @@ const RoomDrawer = ({ classes, rooms, addRoom }) => {
       {rooms &&
         rooms.map((room, i) => (
           <Typography key={i} variant="subtitle1">
-            <Button className={classes.button} variant="outlined">
-              <NavLink to={"/" + room}>{room}</NavLink>
-            </Button>
+            {/* <Button className={classes.button} variant="outlined"> */}
+            <NavLink to={"/" + room}>{room}</NavLink>
+            {/* </Button> */}
           </Typography>
         ))}
 
       <Button
         className={classes.button}
         variant="outlined"
-        onClick={() => addRoom("new room name")}
+        onClick={() => addRoom("newRoomName")}
       >
         Add Room
       </Button>

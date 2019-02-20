@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import MessageList from "./message_list";
 import TextInput from "./text_input";
+import { withRouter } from "react-router-dom";
 
 const styles = {
   root: {
@@ -27,11 +28,13 @@ const styles = {
   }
 };
 
-export default class Conversation extends Component {
+class Conversation extends Component {
   constructor(props) {
     super(props);
 
-    props.connection.onmessage = this.onMessage;
+    if (!props.connection) {
+      this.props.history.push("/");
+    }
   }
 
   state = {
@@ -48,9 +51,9 @@ export default class Conversation extends Component {
     }
 
     if (json.type === "message") {
-      console.log(json.room);
-      console.log(json.username);
-      console.log(json.text);
+      // console.log(json.room);
+      // console.log(json.username);
+      // console.log(json.text);
 
       const { username, text, room } = json;
 
@@ -98,3 +101,5 @@ export default class Conversation extends Component {
     );
   }
 }
+
+export default withRouter(Conversation);

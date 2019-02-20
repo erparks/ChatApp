@@ -17,7 +17,6 @@ export default class MessageList extends Component {
   render() {
     return (
       <div style={styles.root}>
-        {console.log(this.props.messages)}
         {this.props.messages.map((msg, i) => {
           let style;
 
@@ -30,8 +29,8 @@ export default class MessageList extends Component {
           return (
             <div key={i}>
               <Grid container direction="row">
-                {style.float === "right" && <Grid item sm={6} />}
-                <Grid item xs={12} sm={6}>
+                {style.float === "right" && <Grid item md={6} />}
+                <Grid item sm={12} md={6}>
                   <Message
                     style={style}
                     text={msg.text}

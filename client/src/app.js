@@ -1,8 +1,9 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import Conversation from "./components/containers/conversation";
 import RoomDrawer from "./components/presenters/room_drawer";
-import MessageList from "./components/containers/message_list";
-import TextInput from "./components/containers/text_input";
+import AddRoom from "./components/containers/add_room";
+import { addMessage } from "./actions";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 const NoRoom = () => <h4>Please select or create a room on the side bar.</h4>;
@@ -33,6 +34,9 @@ const styles = {
 };
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+  }
   state = {
     connection: null,
     currentRoom: null,
@@ -47,8 +51,24 @@ class App extends Component {
     let connection = new WebSocket("ws://127.0.0.1:8080");
     this.setState({ connection: connection });
 
-    connection.onmessage = this.onMessage;
+    connection.onmessage = this.onMessage(this.props.dispatch);
   }
+
+  onMessage = dispatch => message => {
+    try {
+      var json = JSON.parse(message.data);
+    } catch (e) {
+      console.log("Invalid JSON: ", message.data);
+      return;
+    }
+
+    if (json.type === "message") {
+      const { username, text, room } = json;
+
+      console.log("dispatching: " + text);
+      dispatch(addMessage(text));
+    }
+  };
 
   addRoom = connection => name => {
     this.state.connection &&
@@ -84,15 +104,21 @@ class App extends Component {
     return (
       <Router>
         <div style={{ display: "flex", direction: "row" }}>
-          <RoomDrawer
-            rooms={this.state.rooms}
-            addRoom={this.addRoom(this.state.connection)}
-          />
+          <RoomDrawer rooms={this.state.rooms} />
           <main style={{ flexGrow: "1" }}>
             <div>
               <Route exact path="/" component={NoRoom} />
               <Route
-                path="/:id"
+                path="/AddRoom"
+                render={props => (
+                  <AddRoom
+                    {...props}
+                    addRoom={this.addRoom(this.state.connection)}
+                  />
+                )}
+              />
+              <Route
+                path="/room/:id"
                 component={() => (
                   <Conversation
                     username={this.state.username}
@@ -110,4 +136,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect()(App);

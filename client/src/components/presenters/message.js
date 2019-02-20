@@ -22,6 +22,7 @@ export default function Message(props) {
         style={{
           ...styles.text,
           backgroundColor,
+
           float
         }}
       >

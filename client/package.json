@@ -1,5 +1,5 @@
 {
-  "name": "thirdtry",
+  "name": "chatapp",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,6 +12,7 @@
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.5",
+    "redux": "^4.0.1",
     "typescript": "^3.3.3"
   },
   "scripts": {

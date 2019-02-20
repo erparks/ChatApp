@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles, Typography, Divider } from "@material-ui/core";
 import { Drawer, Button } from "@material-ui/core";
-import { NavLink } from "react-router-dom";
+import { NavLink, withRouter } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -19,7 +19,7 @@ const styles = {
   }
 };
 
-const RoomDrawer = ({ classes, rooms, addRoom }) => {
+const RoomDrawer = ({ classes, rooms, history }) => {
   return (
     <Drawer
       className={classes.drawer}
@@ -35,7 +35,7 @@ const RoomDrawer = ({ classes, rooms, addRoom }) => {
         rooms.map((room, i) => (
           <Typography key={i} variant="subtitle1">
             {/* <Button className={classes.button} variant="outlined"> */}
-            <NavLink to={"/" + room}>{room}</NavLink>
+            <NavLink to={"/room/" + room}>{room}</NavLink>
             {/* </Button> */}
           </Typography>
         ))}
@@ -43,7 +43,7 @@ const RoomDrawer = ({ classes, rooms, addRoom }) => {
       <Button
         className={classes.button}
         variant="outlined"
-        onClick={() => addRoom("newRoomName")}
+        onClick={() => history.push("/AddRoom")}
       >
         Add Room
       </Button>
@@ -51,4 +51,4 @@ const RoomDrawer = ({ classes, rooms, addRoom }) => {
   );
 };
 
-export default withStyles(styles)(RoomDrawer);
+export default withStyles(styles)(withRouter(RoomDrawer));

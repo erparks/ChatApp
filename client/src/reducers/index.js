@@ -1,6 +1,6 @@
-import { ADD_MESSAGE } from "../actions";
+import { ADD_MESSAGE, SET_CUR_ROOM } from "../actions";
 
-const initState = { m: [] };
+const initState = {};
 
 export default function message(state = initState, action) {
   console.log("reducer");
@@ -10,8 +10,19 @@ export default function message(state = initState, action) {
     case ADD_MESSAGE:
       console.log("reducer - message");
       return Object.assign({}, state, {
-        messages: [...state.messages, action.text]
+        [action.room]: [
+          ...state[action.room],
+          { text: action.text, username: action.username }
+        ]
       });
+    case SET_CUR_ROOM:
+      return Object.assign({}, state, {
+        currentRoom: action.name,
+        [action.name]: state.hasOwnProperty([action.name])
+          ? [...state[action.room]]
+          : []
+      });
+
     default:
       return state;
   }

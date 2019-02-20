@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { withStyles, Typography, Divider } from "@material-ui/core";
 import { Drawer, Button } from "@material-ui/core";
 import { NavLink, withRouter } from "react-router-dom";
-
+import { setCurRoom } from "../../actions";
+import { connect } from "react-redux";
 const drawerWidth = 240;
 
 const styles = {
@@ -19,7 +20,7 @@ const styles = {
   }
 };
 
-const RoomDrawer = ({ classes, rooms, history }) => {
+const RoomDrawer = ({ classes, rooms, history, dispatch }) => {
   return (
     <Drawer
       className={classes.drawer}
@@ -34,9 +35,13 @@ const RoomDrawer = ({ classes, rooms, history }) => {
       {rooms &&
         rooms.map((room, i) => (
           <Typography key={i} variant="subtitle1">
-            {/* <Button className={classes.button} variant="outlined"> */}
-            <NavLink to={"/room/" + room}>{room}</NavLink>
-            {/* </Button> */}
+            <Button
+              className={classes.button}
+              variant="outlined"
+              onClick={() => dispatch(setCurRoom(room))}
+            >
+              <NavLink to={"/room/" + room}>{room}</NavLink>
+            </Button>
           </Typography>
         ))}
 
@@ -51,4 +56,4 @@ const RoomDrawer = ({ classes, rooms, history }) => {
   );
 };
 
-export default withStyles(styles)(withRouter(RoomDrawer));
+export default connect()(withStyles(styles)(withRouter(RoomDrawer)));

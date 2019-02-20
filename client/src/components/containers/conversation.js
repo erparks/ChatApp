@@ -75,8 +75,8 @@ class Conversation extends Component {
       <div style={styles.root}>
         <MessageList
           key={1}
+          currentRoom={this.props.currentRoom}
           username={this.props.username}
-          messages={this.state.messages}
         />
 
         <TextInput

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import Conversation from "./components/containers/conversation";
 import RoomDrawer from "./components/presenters/room_drawer";
 import AddRoom from "./components/containers/add_room";
-import { addMessage } from "./actions";
+import { addMessage, setCurRoom } from "./actions";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 const NoRoom = () => <h4>Please select or create a room on the side bar.</h4>;
@@ -66,11 +66,11 @@ class App extends Component {
       const { username, text, room } = json;
 
       console.log("dispatching: " + text);
-      dispatch(addMessage(text));
+      dispatch(addMessage(json));
     }
   };
 
-  addRoom = connection => name => {
+  addRoom = (connection, dispatch) => name => {
     this.state.connection &&
       connection.send(
         JSON.stringify({
@@ -84,6 +84,8 @@ class App extends Component {
       rooms: [...prevState.rooms, name],
       currentRoom: name
     }));
+
+    dispatch(setCurRoom(name));
   };
 
   setRoom = name => {
@@ -113,7 +115,10 @@ class App extends Component {
                 render={props => (
                   <AddRoom
                     {...props}
-                    addRoom={this.addRoom(this.state.connection)}
+                    addRoom={this.addRoom(
+                      this.state.connection,
+                      this.props.dispatch
+                    )}
                   />
                 )}
               />

@@ -7,7 +7,7 @@ import Message from "./reducers";
 
 const store = createStore(
   Message,
-  { messages: [] },
+  { messages: {} },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 

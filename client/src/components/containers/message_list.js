@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Message from "../presenters/message";
 import { Grid } from "@material-ui/core";
+import { connect } from "react-redux";
 
 const styles = {
   root: {
@@ -13,7 +14,7 @@ const styles = {
   }
 };
 
-export default class MessageList extends Component {
+class MessageList extends Component {
   render() {
     return (
       <div style={styles.root}>
@@ -45,3 +46,9 @@ export default class MessageList extends Component {
     );
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  return { messages: [...state[state.currentRoom]] };
+};
+
+export default connect(mapStateToProps)(MessageList);

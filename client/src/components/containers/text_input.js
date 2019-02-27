@@ -1,13 +1,35 @@
 import React, { Component } from "react";
 import * as MyScript from "myscript/dist/myscript.esm";
 import "myscript/dist/myscript.min.css";
+import { withStyles } from '@material-ui/core/styles';
 
-const styles = {
+const styles = theme => ({
+  root: {
+
+    //position: "relative"
+    // position: "absolute",
+    // bottom: "0",
+    //height: "100%"
+  },
   handwritingInput: {
-    height: "300px",
+    [theme.breakpoints.down('lg')]: {
+      height: "300px"
+    },
+    [theme.breakpoints.up('lg')]: {
+      height: "100vh"
+
+    },
     borderTop: "5px solid blue",
     width: "100%",
     backgroundColor: "lightgray"
+
+  },
+  textInputBar: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "stretch",
+    justifyContent: "center",
+
   },
   textInput: {
     padding: "12px 20px",
@@ -24,12 +46,12 @@ const styles = {
     margin: "2px",
     float: "right"
   }
-};
 
-export default class TextInput extends Component {
+})
+
+class TextInput extends Component {
   constructor(props) {
     super(props);
-    console.log("constructor");
   }
 
   state = {
@@ -41,18 +63,7 @@ export default class TextInput extends Component {
     this.setState(!update ? { text: "" } : { text: update });
   };
 
-  send = (connection, username, room) => {
-    let json = JSON.stringify({
-      type: "message",
-      username: username,
-      room: room,
-      text: this.state.text
-    });
-
-    console.log("sending message: " + json);
-
-    this.state.text && connection.send(json);
-
+  clearText = () => {
     this.setText("");
     document.getElementById("clear").click();
   };
@@ -104,15 +115,15 @@ export default class TextInput extends Component {
       }
     });
 
-    undoElement.addEventListener("click", function() {
+    undoElement.addEventListener("click", function () {
       editorElement.editor.undo();
     });
 
-    redoElement.addEventListener("click", function() {
+    redoElement.addEventListener("click", function () {
       editorElement.editor.redo();
     });
 
-    clearElement.addEventListener("click", function() {
+    clearElement.addEventListener("click", function () {
       editorElement.editor.clear();
     });
 
@@ -121,57 +132,61 @@ export default class TextInput extends Component {
     });
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log("Rerender?");
-    return this.state.text !== nextState.text;
-  }
-
   render() {
+
+    const { classes } = this.props
+
     return (
-      <div>
+      <div className={classes.root}>
+        {/* this is the div for the text input and send and min buttons */}
         <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "stretch",
-            justifyContent: "center"
-          }}
+          className={classes.textInputBar}
         >
           <input
             type="text"
-            style={styles.textInput}
+            className={classes.textInput}
+            // style={styles.textInput}
             value={this.state.text}
             onChange={this.onChange}
           />
           <button
-            style={styles.sendButton}
-            onClick={() =>
-              this.send(
-                this.props.connection,
-                this.props.username,
-                this.props.currentRoom
-              )
-            }
+            className={classes.sendButton}
+            //style={styles.sendButton}
+            onClick={() => {
+              this.props.send(this.state.text);
+              this.clearText();
+            }}
           >
             Send
           </button>
-          <button style={styles.sendButton} onClick={this.toggleHandWriting}>
+          <button className={classes.sendButton}
+            //style={styles.sendButton}
+            onClick={this.toggleHandWriting}>
             {this.state.handwritingHidden ? "Max" : "Min"}
           </button>
         </div>
 
         <div
           hidden={this.state.handwritingHidden}
-          style={styles.handwritingInput}
+          className={classes.handwritingInput}
+          // style={{ ...styles.handwritingInput, height: lg ? "100vh" : "300px" }}
+          //style={{ ...styles.handwritingInput }}
           id="editor"
         >
-          <button style={styles.editButton} id="clear">
+          <button
+            className={classes.editButton}
+            //style={styles.editButton}
+            id="clear">
             clear
           </button>
-          <button style={styles.editButton} id="undo">
+          <button className={classes.editButton}
+            //style={styles.editButton}
+            id="undo">
             undo
           </button>
-          <button style={styles.editButton} id="redo">
+          <button className={classes.editButton}
+            //style={styles.editButton}
+            id="redo">
             redo
           </button>
         </div>
@@ -179,3 +194,5 @@ export default class TextInput extends Component {
     );
   }
 }
+
+export default withStyles(styles)(TextInput)

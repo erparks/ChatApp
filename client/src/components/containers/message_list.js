@@ -29,8 +29,8 @@ class MessageList extends Component {
 
           return (
             <div key={i}>
-              <Grid container direction="row">
-                {style.float === "right" && <Grid item md={6} />}
+              <Grid container direction="row" justify={style.float === "right" ? "flex-end" : "flex-start"}>
+                {/* {style.float === "right" && <Grid item md={6} />} */}
                 <Grid item sm={12} md={6}>
                   <Message
                     style={style}
@@ -48,7 +48,10 @@ class MessageList extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  return { messages: [...state[state.currentRoom]] };
+
+  return state.currentRoom
+    ? { messages: [...state.rooms[state.currentRoom]] }
+    : { messages: [] };
 };
 
 export default connect(mapStateToProps)(MessageList);

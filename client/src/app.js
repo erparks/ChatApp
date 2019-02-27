@@ -3,10 +3,9 @@ import { connect } from "react-redux";
 import Conversation from "./components/containers/conversation";
 import RoomDrawer from "./components/presenters/room_drawer";
 import AddRoom from "./components/containers/add_room";
-import { addMessage, setCurRoom } from "./actions";
-import { BrowserRouter as Router, Route } from "react-router-dom";
-
-const NoRoom = () => <h4>Please select or create a room on the side bar.</h4>;
+import NoRoom from "./components/presenters/no_room";
+import { addMessage, setCurRoom, addRoom } from "./actions";
+import { BrowserRouter as Router, Route, withRouter, Switch } from "react-router-dom";
 
 const styles = {
   root: {
@@ -40,10 +39,8 @@ class App extends Component {
   state = {
     connection: null,
     currentRoom: null,
-    username: "",
-    usernameSet: false,
-    messages: [],
-    rooms: []
+    username: "ethan",
+    usernameSet: false
   };
 
   componentDidMount() {
@@ -58,19 +55,19 @@ class App extends Component {
     try {
       var json = JSON.parse(message.data);
     } catch (e) {
-      console.log("Invalid JSON: ", message.data);
       return;
     }
 
     if (json.type === "message") {
       const { username, text, room } = json;
 
-      console.log("dispatching: " + text);
       dispatch(addMessage(json));
     }
   };
 
-  addRoom = (connection, dispatch) => name => {
+  newRoom = (connection, dispatch) => name => {
+    dispatch(addRoom(name))
+
     this.state.connection &&
       connection.send(
         JSON.stringify({
@@ -79,66 +76,80 @@ class App extends Component {
           room: name
         })
       );
-
-    this.setState(prevState => ({
-      rooms: [...prevState.rooms, name],
-      currentRoom: name
-    }));
-
-    dispatch(setCurRoom(name));
   };
 
-  setRoom = name => {
-    this.setState({ currentRoom: name });
+  setRoom = (dispatch, history) => name => {
+
+    dispatch(setCurRoom(name));
+    history.push("/room/" + name);
   };
 
   getMessagesByRoom = room => {
     return this.state.messages.find(msg => msg.room === room);
   };
 
-  renderConversation() {
-    console.log("refresh");
-    return <h1>dsf</h1>;
-  }
+  usernameChange = e => {
+    this.setState({ username: e.target.value });
+  };
 
   render() {
     console.log("app refresh");
+
+    const { history, dispatch } = this.props;
+
     return (
-      <Router>
-        <div style={{ display: "flex", direction: "row" }}>
-          <RoomDrawer rooms={this.state.rooms} />
-          <main style={{ flexGrow: "1" }}>
-            <div>
-              <Route exact path="/" component={NoRoom} />
-              <Route
-                path="/AddRoom"
-                render={props => (
-                  <AddRoom
-                    {...props}
-                    addRoom={this.addRoom(
-                      this.state.connection,
-                      this.props.dispatch
-                    )}
-                  />
-                )}
+      <div style={{ display: "flex", direction: "row" }}>
+        <RoomDrawer
+          addDisabled={!this.state.usernameSet}
+          setRoom={this.setRoom(dispatch, history)}
+          rooms={this.props.rooms}
+          history={this.props.history}
+        />
+        <main style={{ flexGrow: "1" }}>
+
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <NoRoom
+                usernameSet={this.state.usernameSet}
+                username={this.state.username}
+                usernameChange={this.usernameChange}
+                usernameSubmit={name =>
+                  this.setState({ username: name, usernameSet: true })
+                }
               />
-              <Route
-                path="/room/:id"
-                component={() => (
-                  <Conversation
-                    username={this.state.username}
-                    usernameSubmit={name => this.setState({ username: name })}
-                    connection={this.state.connection}
-                    currentRoom={this.state.currentRoom}
-                  />
-                )}
+            )}
+          />
+          <Route
+            path="/AddRoom"
+            render={props => (
+              <AddRoom
+                {...props}
+                setRoom={this.setRoom(dispatch, history)}
+                addRoom={this.newRoom(this.state.connection, dispatch)}
               />
-            </div>
-          </main>
-        </div>
-      </Router>
+            )}
+          />
+          <Route
+            path="/room/:id"
+            render={() => {
+              return <Conversation
+                currentRoom={this.props.currentRoom}
+                username={this.state.username}
+                connection={this.state.connection}
+              />
+            }}
+          />
+
+        </main>
+      </div>
     );
   }
 }
 
-export default connect()(App);
+const mapStateToProps = (state, ownProps) => {
+  return { currentRoom: state.currentRoom, rooms: Object.keys(state.rooms) };
+};
+
+export default withRouter(connect(mapStateToProps)(App));

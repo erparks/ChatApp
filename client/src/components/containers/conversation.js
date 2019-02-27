@@ -2,29 +2,12 @@ import React, { Component } from "react";
 import MessageList from "./message_list";
 import TextInput from "./text_input";
 import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { Grid } from "@material-ui/core";
 
 const styles = {
   root: {
     height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "stretch"
-  },
-  handInput: {
-    height: "300px",
-    borderTop: "5px solid red",
-    width: "auto",
-    backgroundColor: "lightgray"
-  },
-  textInput: {
-    padding: "12px 20px",
-    fontSize: "20px",
-    margin: "20px 0px",
-    width: "auto"
-  },
-  messages: {
-    height: "100%"
   }
 };
 
@@ -37,69 +20,50 @@ class Conversation extends Component {
     }
   }
 
-  state = {
-    username: "",
-    messages: []
-  };
+  send = (connection, username, room) => text => {
+    let json = JSON.stringify({
+      type: "message",
+      username: username,
+      room: room,
+      text: text
+    });
 
-  onMessage = message => {
-    try {
-      var json = JSON.parse(message.data);
-    } catch (e) {
-      console.log("Invalid JSON: ", message.data);
-      return;
-    }
-
-    if (json.type === "message") {
-      // console.log(json.room);
-      // console.log(json.username);
-      // console.log(json.text);
-
-      const { username, text, room } = json;
-
-      this.setState(prevState => ({
-        messages: [
-          ...prevState.messages,
-          { room: room, username: username, text: text }
-        ]
-      }));
-    }
-  };
-
-  usernameChange = e => {
-    this.setState({ username: e.target.value });
+    text && connection.send(json);
   };
 
   render() {
-    return this.props.username !== "" ? (
+    return (
       <div style={styles.root}>
-        <MessageList
-          key={1}
-          currentRoom={this.props.currentRoom}
-          username={this.props.username}
-        />
+        <Grid container direction="row">
+          <Grid item xs={12} lg={6} >
 
-        <TextInput
-          key={2}
-          username={this.props.username}
-          currentRoom={this.props.currentRoom}
-          connection={this.props.connection}
-        />
-      </div>
-    ) : (
-      <div>
-        Please enter a username
-        <input
-          type="text"
-          value={this.state.username}
-          onChange={this.usernameChange}
-        />
-        <button onClick={() => this.props.usernameSubmit(this.state.username)}>
-          Start Chatting
-        </button>
+            <MessageList
+              currentRoom={this.props.currentRoom}
+              username={this.props.username}
+            />
+
+          </Grid>
+          <Grid item xs={12} lg={6}>
+            <TextInput
+              username={this.props.username}
+              send={this.send(
+                this.props.connection,
+                this.props.username,
+                this.props.currentRoom
+              )}
+              currentRoom={this.props.currentRoom}
+              connection={this.props.connection}
+            /></Grid>
+        </Grid>
       </div>
     );
   }
 }
+
+const mapStateToProps = state => {
+  return { currentRoom: state.currentRoom };
+};
+
+// export default connect(mapStateToProps)(withRouter(Conversation));
 
 export default withRouter(Conversation);

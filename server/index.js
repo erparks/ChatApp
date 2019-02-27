@@ -8,14 +8,14 @@ let port = process.env.PORT || process.argv[2] || 8080;
 let rooms = {};
 
 // create a simple server
-let server = http.createServer(function(req, res) {
+let server = http.createServer(function (req, res) {
   res.writeHead(200, { "Content-Type": "text/html" });
   res.write("I hope this works");
   res.end();
 });
 
 // listen on the port
-server.listen(port, function() {
+server.listen(port, function () {
   console.log("app up on port: " + port);
 });
 
@@ -32,7 +32,7 @@ function htmlEntities(str) {
 }
 
 function handleMessage(data) {
-  console.log("Received messsage from room: " + data.room);
+  console.log("Rcv msg from room: " + data.room);
 
   let reconstructedMessage = {
     type: "message",
@@ -60,18 +60,18 @@ function handleSubscribe(data, connection) {
   console.log("New subscription: " + Object.keys(rooms));
 }
 
-wsServer.on("request", function(request) {
-  console.log(new Date() + " Connection from origin " + request.origin + ".");
+wsServer.on("request", function (request) {
+  console.log("Connection from origin " + request.origin + ".");
 
   var connection = request.accept(null, request.origin);
 
   //rooms.default.push(connection);
 
-  connection.on("message", function(message) {
+  connection.on("message", function (message) {
     if (message.type === "utf8") {
       console.log(message);
       // log and broadcast the message
-      console.log(new Date() + " Received Message: " + message.utf8Data);
+      console.log("Rcvd Msg: " + message.utf8Data);
 
       let data = JSON.parse(message.utf8Data);
 
@@ -87,22 +87,30 @@ wsServer.on("request", function(request) {
     }
   });
 
-  connection.on("close", function(connection) {
+  connection.on("close", function () {
     // remove user from the list of connected clients
 
-    Object.keys(obj).forEach(function(key, index) {
+    console.log(rooms)
+
+    Object.keys(rooms).forEach(function (key, index) {
       // key: the name of the object key
       // index: the ordinal position of the key within the object
 
-      let connectionIndex = obj.key.clients.indexOf(connection);
+      console.log("attempting remove from: " + key)
+
+      let connectionIndex = rooms[key].clients.indexOf(connection);
 
       if (connectionIndex > -1) {
-        obj.key.clients.splice(connectionIndex, 1);
-        obj.key.clientCount--;
+        console.log("client removed")
+        rooms[key].clients.splice(connectionIndex, 1);
+        rooms[key].clientCount--;
 
-        if (obj.key.clientCount === 0) {
-          delete obj.key;
+        if (rooms[key].clientCount === 0) {
+          delete rooms[key];
         }
+      }
+      else {
+        console.log("client not removed")
       }
     });
   });

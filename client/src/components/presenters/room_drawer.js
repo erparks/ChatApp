@@ -1,9 +1,7 @@
-import React, { Component } from "react";
+import React from "react";
 import { withStyles, Typography, Divider } from "@material-ui/core";
 import { Drawer, Button } from "@material-ui/core";
-import { NavLink, withRouter } from "react-router-dom";
-import { setCurRoom } from "../../actions";
-import { connect } from "react-redux";
+
 const drawerWidth = 240;
 
 const styles = {
@@ -20,7 +18,7 @@ const styles = {
   }
 };
 
-const RoomDrawer = ({ classes, rooms, history, dispatch }) => {
+const RoomDrawer = ({ classes, rooms, history, setRoom, addDisabled }) => {
   return (
     <Drawer
       className={classes.drawer}
@@ -38,9 +36,9 @@ const RoomDrawer = ({ classes, rooms, history, dispatch }) => {
             <Button
               className={classes.button}
               variant="outlined"
-              onClick={() => dispatch(setCurRoom(room))}
+              onClick={() => setRoom(room)}
             >
-              <NavLink to={"/room/" + room}>{room}</NavLink>
+              {room}
             </Button>
           </Typography>
         ))}
@@ -48,6 +46,7 @@ const RoomDrawer = ({ classes, rooms, history, dispatch }) => {
       <Button
         className={classes.button}
         variant="outlined"
+        disabled={addDisabled}
         onClick={() => history.push("/AddRoom")}
       >
         Add Room
@@ -56,4 +55,4 @@ const RoomDrawer = ({ classes, rooms, history, dispatch }) => {
   );
 };
 
-export default connect()(withStyles(styles)(withRouter(RoomDrawer)));
+export default withStyles(styles)(RoomDrawer);

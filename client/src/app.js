@@ -5,7 +5,12 @@ import RoomDrawer from "./components/presenters/room_drawer";
 import AddRoom from "./components/containers/add_room";
 import NoRoom from "./components/presenters/no_room";
 import { addMessage, setCurRoom, addRoom } from "./actions";
-import { BrowserRouter as Router, Route, withRouter, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  withRouter,
+  Switch
+} from "react-router-dom";
 
 const styles = {
   root: {
@@ -62,11 +67,15 @@ class App extends Component {
       const { username, text, room } = json;
 
       dispatch(addMessage(json));
+      // var message_list = document.getElementById("message_list");
+      // message_list
+      //   ? (message_list.scrollTop = message_list.scrollHeight)
+      //   : console.log("message list not available");
     }
   };
 
   newRoom = (connection, dispatch) => name => {
-    dispatch(addRoom(name))
+    dispatch(addRoom(name));
 
     this.state.connection &&
       connection.send(
@@ -79,7 +88,6 @@ class App extends Component {
   };
 
   setRoom = (dispatch, history) => name => {
-
     dispatch(setCurRoom(name));
     history.push("/room/" + name);
   };
@@ -106,7 +114,6 @@ class App extends Component {
           history={this.props.history}
         />
         <main style={{ flexGrow: "1" }}>
-
           <Route
             exact
             path="/"
@@ -134,14 +141,15 @@ class App extends Component {
           <Route
             path="/room/:id"
             render={() => {
-              return <Conversation
-                currentRoom={this.props.currentRoom}
-                username={this.state.username}
-                connection={this.state.connection}
-              />
+              return (
+                <Conversation
+                  currentRoom={this.props.currentRoom}
+                  username={this.state.username}
+                  connection={this.state.connection}
+                />
+              );
             }}
           />
-
         </main>
       </div>
     );

@@ -2,12 +2,11 @@ import React, { Component } from "react";
 import MessageList from "./message_list";
 import TextInput from "./text_input";
 import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
 import { Grid } from "@material-ui/core";
 
 const styles = {
   root: {
-    height: "100vh",
+    height: "100vh"
   }
 };
 
@@ -35,13 +34,11 @@ class Conversation extends Component {
     return (
       <div style={styles.root}>
         <Grid container direction="row">
-          <Grid item xs={12} lg={6} >
-
+          <Grid item xs={12} lg={6}>
             <MessageList
               currentRoom={this.props.currentRoom}
               username={this.props.username}
             />
-
           </Grid>
           <Grid item xs={12} lg={6}>
             <TextInput
@@ -53,7 +50,8 @@ class Conversation extends Component {
               )}
               currentRoom={this.props.currentRoom}
               connection={this.props.connection}
-            /></Grid>
+            />
+          </Grid>
         </Grid>
       </div>
     );

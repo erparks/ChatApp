@@ -17,7 +17,7 @@ export default function Message(props) {
   const { backgroundColor, float } = props.style;
 
   return (
-    <div>
+    <div style={{ overflowX: "scroll" }}>
       <div
         style={{
           ...styles.text,
